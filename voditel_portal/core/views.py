@@ -2,11 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.paginator import Paginator  
 from .forms import RegisterForm, ApplicationForm, ReviewForm
 from .models import Application, TransportType
 
 def register(request):
-    
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -26,7 +26,6 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 def user_login(request):
-    
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -45,7 +44,6 @@ def user_login(request):
 
 @login_required
 def dashboard(request):
-    
     applications = request.user.applications.all()
     
     for app in applications:
@@ -67,7 +65,6 @@ def dashboard(request):
 
 @login_required
 def create_application(request):
-  
     if request.method == 'POST':
         form = ApplicationForm(request.POST)
         if form.is_valid():
@@ -82,6 +79,7 @@ def create_application(request):
     return render(request, 'create_application.html', {'form': form})
 
 def admin_panel(request):
+    
     if request.user.is_authenticated:
         if request.user.username != 'Admin26':
             messages.error(request, 'У вас нет доступа к панели администратора')
@@ -109,13 +107,15 @@ def admin_panel(request):
             else:
                 messages.error(request, 'Неверный логин или пароль администратора')
     
+   
     applications = Application.objects.all().select_related('user', 'transport_type')
     
+   
     status_filter = request.GET.get('status')
     if status_filter:
         applications = applications.filter(status=status_filter)
     
-    # Сортировка
+    
     sort_by = request.GET.get('sort')
     if sort_by == 'date_asc':
         applications = applications.order_by('created_at')
@@ -124,6 +124,12 @@ def admin_panel(request):
     elif sort_by == 'user':
         applications = applications.order_by('user__username')
     
+   
+    paginator = Paginator(applications, 5) 
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+
     if request.method == 'POST':
         app_id = request.POST.get('application_id')
         new_status = request.POST.get('status')
@@ -136,7 +142,7 @@ def admin_panel(request):
             return redirect('admin_panel')
     
     return render(request, 'admin_panel.html', {
-        'applications': applications,
+        'applications': page_obj,  
         'status_filter': status_filter,
         'sort_by': sort_by,
         'status_choices': Application.STATUS_CHOICES
@@ -145,5 +151,3 @@ def admin_panel(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
-
-# Create your views here.

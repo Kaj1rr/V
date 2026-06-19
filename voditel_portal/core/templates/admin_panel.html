@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1> Панель администратора</h1>
+<h1>Панель администратора</h1>
 
 <form method="get" class="admin-filters">
     <select name="status">
@@ -56,11 +56,31 @@
     </div>
     {% endfor %}
     
+    
     <div class="pagination">
-        <button>1</button>
-        <button>2</button>
-        <button>3</button>
+        {% if applications.has_previous %}
+            <a href="?page=1{% if status_filter %}&status={{ status_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">
+                <button>« Первая</button>
+            </a>
+            <a href="?page={{ applications.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">
+                <button>‹ Назад</button>
+            </a>
+        {% endif %}
+
+        <span style="display: flex; align-items: center; padding: 0 15px;">
+            Страница {{ applications.number }} из {{ applications.paginator.num_pages }}
+        </span>
+
+        {% if applications.has_next %}
+            <a href="?page={{ applications.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">
+                <button>Вперед ›</button>
+            </a>
+            <a href="?page={{ applications.paginator.num_pages }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">
+                <button>Последняя »</button>
+            </a>
+        {% endif %}
     </div>
+    
 {% else %}
     <p style="text-align: center; color: #666;">Заявок нет</p>
 {% endif %}
