@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1> Личный кабинет</h1>
+
+<div class="slider">
+    <div class="slides">
+        <div class="slide">
+             Управление катером
+            <small>Стань капитаном</small>
+        </div>
+        <div class="slide">
+             Круизные лайнеры
+            <small>Борозди океаны</small>
+        </div>
+        <div class="slide">
+             Яхты
+            <small>Роскошь и скорость</small>
+        </div>
+        <div class="slide">
+             Школа капитанов
+            <small>Водить.РФ</small>
+        </div>
+    </div>
+    <button class="slider-btn prev">‹</button>
+    <button class="slider-btn next">›</button>
+</div>
+
+<h2>Мои заявки</h2>
+
+{% if applications %}
+    {% for app in applications %}
+    <div class="app-card">
+        <h3>{{ app.transport_type.icon }} Заявка #{{ app.id }}</h3>
+        <p><strong>Транспорт:</strong> {{ app.transport_type.name }}</p>
+        <p><strong>Дата начала:</strong> {{ app.start_date|date:"d.m.Y" }}</p>
+        <p><strong>Оплата:</strong> {{ app.get_payment_method_display }}</p>
+        <p>
+            <strong>Статус:</strong>
+            <span class="badge badge-{% if app.status == 'new' %}new{% elif app.status == 'in_progress' %}progress{% else %}completed{% endif %}">
+                {{ app.get_status_display }}
+            </span>
+        </p>
+        
+        {% if app.review %}
+        <div class="review-text">
+            <strong>Ваш отзыв:</strong> {{ app.review }}
+        </div>
+        {% elif app.can_review %}
+        <form method="post" class="review-form">
+            {% csrf_token %}
+            <input type="hidden" name="application_id" value="{{ app.id }}">
+            <div class="form-group">
+                <label>Оставить отзыв:</label>
+                <textarea name="review" rows="2" required placeholder="Поделитесь впечатлениями..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Отправить отзыв</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% else %}
+    <p style="text-align: center; color: #666;">У вас пока нет заявок. <a href="{% url 'create_application' %}">Создать заявку</a></p>
+{% endif %}
+
+<a href="{% url 'create_application' %}" class="btn" style="margin-top: 20px;">Новая заявка</a>
+{% endblock %}

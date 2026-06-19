@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1> Панель администратора</h1>
+
+<form method="get" class="admin-filters">
+    <select name="status">
+        <option value="">Все статусы</option>
+        {% for key, value in status_choices %}
+        <option value="{{ key }}" {% if status_filter == key %}selected{% endif %}>
+            {{ value }}
+        </option>
+        {% endfor %}
+    </select>
+    
+    <select name="sort">
+        <option value="">Без сортировки</option>
+        <option value="date_desc" {% if sort_by == 'date_desc' %}selected{% endif %}>Сначала новые</option>
+        <option value="date_asc" {% if sort_by == 'date_asc' %}selected{% endif %}>Сначала старые</option>
+        <option value="user" {% if sort_by == 'user' %}selected{% endif %}>По пользователю</option>
+    </select>
+    
+    <button type="submit" class="btn" style="flex: 0.5;">Применить</button>
+</form>
+
+{% if applications %}
+    {% for app in applications %}
+    <div class="app-card">
+        <h3>{{ app.transport_type.icon }} Заявка #{{ app.id }}</h3>
+        <p><strong>Пользователь:</strong> {{ app.user.first_name }} ({{ app.user.username }})</p>
+        <p><strong>Транспорт:</strong> {{ app.transport_type.name }}</p>
+        <p><strong>Дата начала:</strong> {{ app.start_date|date:"d.m.Y" }}</p>
+        <p><strong>Оплата:</strong> {{ app.get_payment_method_display }}</p>
+        <p>
+            <strong>Статус:</strong>
+            <span class="badge badge-{% if app.status == 'new' %}new{% elif app.status == 'in_progress' %}progress{% else %}completed{% endif %}">
+                {{ app.get_status_display }}
+            </span>
+        </p>
+        {% if app.review %}
+        <div class="review-text"><strong>Отзыв:</strong> {{ app.review }}</div>
+        {% endif %}
+        
+        <form method="post" style="margin-top: 10px; display: flex; gap: 10px;">
+            {% csrf_token %}
+            <input type="hidden" name="application_id" value="{{ app.id }}">
+            <select name="status" style="flex: 1;">
+                {% for key, value in status_choices %}
+                <option value="{{ key }}" {% if app.status == key %}selected{% endif %}>
+                    {{ value }}
+                </option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-warning" style="flex: 0.5;">Обновить</button>
+        </form>
+    </div>
+    {% endfor %}
+    
+    <div class="pagination">
+        <button>1</button>
+        <button>2</button>
+        <button>3</button>
+    </div>
+{% else %}
+    <p style="text-align: center; color: #666;">Заявок нет</p>
+{% endif %}
+{% endblock %}

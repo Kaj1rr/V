@@ -1,0 +1,80 @@
+# Виртуальное окружение
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Файлы базы данных (SQLite)
+*.sqlite3
+db.sqlite3
+db.sqlite3-journal
+
+
+# Файлы кэша Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# IDE и редакторы
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.iml
+
+# Файлы настроек с секретами
+local_settings.py
+.env
+.env.local
+.env.production
+
+# Статические файлы
+staticfiles/
+static/
+media/
+mediafiles/
+
+# Отчеты о покрытии тестами
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+.mypy_cache/
+
+# Файлы развертывания (Docker)
+*.pid
+*.pid.lock
+docker-compose.override.yml
+
+# Временные файлы
+*.tmp
+*.bak
+*.backup
+temp/
+tmp/
+
+# Документация и архивы (если не хотите пушить)
+*.zip
+*.rar
+*.jfif
+*.png
+*.jpg
+*.pdf
+*.docx
+
+# Настройки для Demo20 (админка)
+# Можно исключить, если пароль не должен быть в репозитории
+config.json
+secrets.json
